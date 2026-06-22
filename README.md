@@ -164,7 +164,7 @@ deploy na **Vercel**. Cobre o **Módulo 1 — Consumo em tempo real**:
 
 | Quem | Acesso | O que faz |
 |---|---|---|
-| **Cliente** | `/(t)/:tableId` (link/QR, sem login) | Vê a conta **ao vivo**, chama o garçom, pede a conta |
+| **Cliente** | `/t/:tableId` (link/QR, sem login) | Vê a conta **ao vivo**, chama o garçom, pede a conta |
 | **Equipe** | `/login` → `/app` | Cadastra mesas e cardápio, lança itens, atende chamadas, fecha a conta |
 | **Painel** | `/app` | Faturamento, mesas ocupadas e chamadas em tempo real |
 
