@@ -9,6 +9,11 @@
 --     inserção DIRETA em establishments/staff pelo cliente é BLOQUEADA (RLS).
 -- ============================================================================
 
+-- Pré-requisito da 0002 (idempotente): a função create_bar_with_invite grava
+-- staff.user_id. Garantimos a coluna aqui também, caso a 0002 não tenha rodado.
+alter table staff add column if not exists user_id uuid references auth.users(id) on delete set null;
+create index if not exists idx_staff_user on staff (user_id);
+
 -- Admins da plataforma (operadores do EntreMesas) -----------------------------
 create table if not exists platform_admins (
   user_id    uuid primary key references auth.users(id) on delete cascade,
