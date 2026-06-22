@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentação — EntreMesas</title>
+  <meta name="description" content="Especificação completa do EntreMesas: arquitetura, banco de dados, fluxos, wireframes, segurança, monetização, MVP e roadmap." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍻</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/styles/github-dark.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/highlight.min.js"></script>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:#0b0f14; color:#e5e7eb; font-family:Inter,system-ui,sans-serif; }
+    a { color:#34d399; }
+    header { position:sticky; top:0; z-index:30; background:rgba(11,15,20,.85); backdrop-filter:blur(8px); border-bottom:1px solid #1f2937; }
+    .bar { max-width:1200px; margin:0 auto; padding:0 1.25rem; height:60px; display:flex; align-items:center; justify-content:space-between; }
+    .bar a.brand { color:#e5e7eb; text-decoration:none; font-weight:800; font-size:1.05rem; }
+    .bar .home { font-size:.85rem; color:#9ca3af; text-decoration:none; }
+    .bar .home:hover { color:#fff; }
+    .layout { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:280px 1fr; gap:2rem; padding:1.5rem 1.25rem 4rem; }
+    nav.side { position:sticky; top:76px; align-self:start; max-height:calc(100vh - 96px); overflow:auto; border:1px solid #1f2937; border-radius:.8rem; background:#11161d; padding:.6rem; }
+    nav.side a { display:block; padding:.5rem .7rem; border-radius:.5rem; color:#cbd5e1; text-decoration:none; font-size:.88rem; }
+    nav.side a:hover { background:#161d26; }
+    nav.side a.active { background:#10b981; color:#0b0f14; font-weight:700; }
+    .mobile-nav { display:none; }
+    .mobile-nav select { width:100%; padding:.7rem; background:#11161d; color:#e5e7eb; border:1px solid #1f2937; border-radius:.6rem; font-size:.95rem; }
+    #status { color:#9ca3af; padding:2rem 0; }
+    /* prose */
+    #content { min-width:0; }
+    #content h1 { font-size:1.9rem; font-weight:800; margin:.1em 0 .7em; line-height:1.2; }
+    #content h2 { font-size:1.4rem; font-weight:700; margin:1.5em 0 .5em; padding-top:.6em; border-top:1px solid #1f2937; }
+    #content h3 { font-size:1.15rem; font-weight:600; margin:1.1em 0 .4em; }
+    #content p { margin:.65em 0; color:#cbd5e1; line-height:1.75; }
+    #content ul, #content ol { margin:.6em 0 .6em 1.3em; color:#cbd5e1; }
+    #content li { margin:.28em 0; line-height:1.6; }
+    #content code { background:#0f1620; border:1px solid #1f2937; border-radius:.35rem; padding:.05em .35em; font-size:.85em; }
+    #content pre { background:#0d131b; border:1px solid #1f2937; border-radius:.6rem; padding:1rem; overflow:auto; margin:.9em 0; }
+    #content pre code { background:none; border:none; padding:0; font-size:.84rem; }
+    #content table { border-collapse:collapse; width:100%; margin:.9em 0; display:block; overflow:auto; font-size:.9rem; }
+    #content th, #content td { border:1px solid #1f2937; padding:.5em .75em; text-align:left; vertical-align:top; }
+    #content th { background:#11161d; }
+    #content blockquote { border-left:3px solid #10b981; padding:.3em 1em; margin:.9em 0; background:#0f1620; color:#9ca3af; border-radius:0 .4rem .4rem 0; }
+    #content hr { border:none; border-top:1px solid #1f2937; margin:1.6em 0; }
+    #content img { max-width:100%; }
+    #content .mermaid { background:#0d131b; border:1px solid #1f2937; border-radius:.6rem; padding:1rem; margin:1.1em 0; text-align:center; overflow:auto; }
+    #content .mermaid[data-failed] { color:#f87171; font-family:monospace; text-align:left; white-space:pre-wrap; }
+    @media (max-width:860px) {
+      .layout { grid-template-columns:1fr; }
+      nav.side { display:none; }
+      .mobile-nav { display:block; margin-bottom:1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <a href="index.html" class="brand">🍻 Entre<span style="color:#10b981">Mesas</span> · Docs</a>
+      <a href="index.html" class="home">← Voltar ao site</a>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="side" id="sidebar"></nav>
+    <section id="content">
+      <div class="mobile-nav"><select id="mobileSelect"></select></div>
+      <div id="status">Carregando documentação…</div>
+      <div id="doc"></div>
+    </section>
+  </div>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad:false, theme:'dark', securityLevel:'loose', themeVariables:{ fontFamily:'Inter, sans-serif' } });
+
+    const DOCS = [
+      { slug:'readme', title:'★ Visão geral (README)', path:'README.md' },
+      { slug:'01-visao-geral', title:'01 · Visão Geral', path:'docs/01-visao-geral.md' },
+      { slug:'02-arquitetura', title:'02 · Arquitetura', path:'docs/02-arquitetura.md' },
+      { slug:'03-fluxos-usuario', title:'03 · Fluxos de Usuário', path:'docs/03-fluxos-usuario.md' },
+      { slug:'04-banco-de-dados', title:'04 · Banco de Dados', path:'docs/04-banco-de-dados.md' },
+      { slug:'05-modulo-consumo', title:'05 · Módulo 1 — Consumo', path:'docs/05-modulo-consumo.md' },
+      { slug:'06-modulo-social', title:'06 · Módulo 2 — Social Bar', path:'docs/06-modulo-social.md' },
+      { slug:'07-painel-admin', title:'07 · Painel Admin', path:'docs/07-painel-admin.md' },
+      { slug:'08-wireframes', title:'08 · Wireframes', path:'docs/08-wireframes.md' },
+      { slug:'09-seguranca-privacidade', title:'09 · Segurança e Privacidade', path:'docs/09-seguranca-privacidade.md' },
+      { slug:'10-integracao-whatsapp', title:'10 · Integração WhatsApp', path:'docs/10-integracao-whatsapp.md' },
+      { slug:'11-monetizacao', title:'11 · Monetização', path:'docs/11-monetizacao.md' },
+      { slug:'12-mvp', title:'12 · MVP', path:'docs/12-mvp.md' },
+      { slug:'13-roadmap', title:'13 · Roadmap', path:'docs/13-roadmap.md' },
+      { slug:'14-api-spec', title:'14 · Especificação de API', path:'docs/14-api-spec.md' },
+    ];
+
+    const sidebar = document.getElementById('sidebar');
+    const mobileSelect = document.getElementById('mobileSelect');
+    const statusEl = document.getElementById('status');
+    const docEl = document.getElementById('doc');
+
+    DOCS.forEach(d => {
+      const a = document.createElement('a');
+      a.href = '#' + d.slug; a.textContent = d.title; a.dataset.slug = d.slug;
+      sidebar.appendChild(a);
+      const o = document.createElement('option');
+      o.value = d.slug; o.textContent = d.title;
+      mobileSelect.appendChild(o);
+    });
+    mobileSelect.addEventListener('change', () => { location.hash = '#' + mobileSelect.value; });
+
+    marked.setOptions({ gfm:true, breaks:false });
+
+    function currentSlug() {
+      const h = location.hash.replace('#','').trim();
+      return DOCS.some(d => d.slug === h) ? h : 'readme';
+    }
+
+    async function load(slug) {
+      const doc = DOCS.find(d => d.slug === slug) || DOCS[0];
+      sidebar.querySelectorAll('a').forEach(a => a.classList.toggle('active', a.dataset.slug === slug));
+      mobileSelect.value = slug;
+      statusEl.style.display = 'block';
+      statusEl.textContent = 'Carregando…';
+      docEl.innerHTML = '';
+      try {
+        const res = await fetch(doc.path, { cache:'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const md = await res.text();
+        docEl.innerHTML = marked.parse(md);
+        statusEl.style.display = 'none';
+
+        // converte blocos ```mermaid em divs e renderiza
+        docEl.querySelectorAll('code.language-mermaid').forEach(code => {
+          const pre = code.closest('pre');
+          const div = document.createElement('div');
+          div.className = 'mermaid';
+          div.textContent = code.textContent;
+          (pre || code).replaceWith(div);
+        });
+        // syntax highlight nos demais blocos
+        docEl.querySelectorAll('pre code:not(.language-mermaid)').forEach(b => {
+          try { hljs.highlightElement(b); } catch (e) {}
+        });
+        // renderiza mermaid
+        try {
+          await mermaid.run({ nodes: docEl.querySelectorAll('.mermaid') });
+        } catch (e) {
+          docEl.querySelectorAll('.mermaid:not([data-processed])').forEach(m => m.setAttribute('data-failed','1'));
+          console.warn('Mermaid:', e);
+        }
+        // reescreve links internos .md para navegação por hash
+        docEl.querySelectorAll('a[href$=".md"]').forEach(a => {
+          const file = (a.getAttribute('href') || '').split('/').pop().replace('.md','').toLowerCase();
+          const target = file === 'readme' ? 'readme' : file;
+          if (DOCS.some(d => d.slug === target)) a.setAttribute('href', '#' + target);
+        });
+        window.scrollTo({ top:0 });
+      } catch (e) {
+        statusEl.style.display = 'block';
+        statusEl.innerHTML = 'Não foi possível carregar este documento (' + e.message +
+          ').<br>Em desenvolvimento local, sirva a pasta por HTTP (ex.: <code>npx serve</code>). Na Vercel funciona normalmente.';
+      }
+    }
+
+    window.addEventListener('hashchange', () => load(currentSlug()));
+    load(currentSlug());
+  </script>
+</body>
+</html>

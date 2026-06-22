@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EntreMesas — Consumo em tempo real + rede social local para bares</title>
+  <meta name="description" content="EntreMesas une gestão de consumo em tempo real (via WhatsApp) a uma rede social local efêmera baseada nas mesas do bar. Transparência, conexões e privacidade total." />
+  <meta name="theme-color" content="#0b0f14" />
+  <meta property="og:title" content="EntreMesas" />
+  <meta property="og:description" content="O que acontece entre as mesas, fica entre as mesas." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍻</text></svg>" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0b0f14', panel: '#11161d', panel2: '#161d26',
+            line: '#1f2937', brand: '#10b981', flirt: '#fb7185', fire: '#f59e0b',
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background: #0b0f14; color: #e5e7eb; font-family: Inter, system-ui, sans-serif; }
+    .glow { background: radial-gradient(60% 60% at 50% 0%, rgba(16,185,129,.18), transparent 70%), radial-gradient(40% 40% at 80% 10%, rgba(251,113,133,.12), transparent 70%); }
+    .card { background: #11161d; border: 1px solid #1f2937; border-radius: 1rem; }
+    .chip { border: 1px solid #1f2937; background: #161d26; border-radius: 9999px; }
+    .grad-text { background: linear-gradient(90deg,#34d399,#fb7185); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    a { transition: color .15s ease, opacity .15s ease; }
+    .reveal { opacity: 0; transform: translateY(12px); transition: all .6s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- NAV -->
+  <header class="sticky top-0 z-50 backdrop-blur bg-ink/80 border-b border-line">
+    <nav class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+      <a href="#top" class="font-extrabold text-lg flex items-center gap-2">🍻 <span>Entre<span class="text-brand">Mesas</span></span></a>
+      <div class="hidden md:flex items-center gap-7 text-sm text-gray-300">
+        <a href="#consumo" class="hover:text-white">Consumo</a>
+        <a href="#social" class="hover:text-white">Social Bar</a>
+        <a href="#privacidade" class="hover:text-white">Privacidade</a>
+        <a href="#arquitetura" class="hover:text-white">Arquitetura</a>
+        <a href="#planos" class="hover:text-white">Planos</a>
+        <a href="docs.html" class="hover:text-white">Documentação</a>
+      </div>
+      <a href="docs.html" class="text-sm font-semibold px-4 py-2 rounded-lg bg-brand text-ink hover:opacity-90">Ver a spec</a>
+    </nav>
+  </header>
+
+  <main id="top">
+
+    <!-- HERO -->
+    <section class="glow">
+      <div class="max-w-6xl mx-auto px-5 pt-20 pb-16 grid md:grid-cols-2 gap-12 items-center">
+        <div>
+          <span class="chip inline-flex items-center gap-2 px-3 py-1 text-xs text-gray-300 mb-5">✨ Plataforma para bares e restaurantes</span>
+          <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
+            O que acontece <span class="grad-text">entre as mesas</span>, fica entre as mesas.
+          </h1>
+          <p class="mt-5 text-lg text-gray-400 max-w-xl">
+            Gestão de consumo <strong class="text-gray-200">em tempo real</strong> pelo WhatsApp +
+            uma <strong class="text-gray-200">rede social local efêmera</strong> para conhecer quem está no bar —
+            com <strong class="text-gray-200">privacidade total</strong>.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="#consumo" class="px-5 py-3 rounded-xl bg-brand text-ink font-semibold hover:opacity-90">Como funciona</a>
+            <a href="docs.html" class="px-5 py-3 rounded-xl border border-line hover:bg-panel font-semibold">Documentação completa →</a>
+          </div>
+          <div class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500">
+            <span>📲 Notificação por WhatsApp</span>
+            <span>🗺️ Mapa social do salão</span>
+            <span>🔒 Anônimo e efêmero</span>
+          </div>
+        </div>
+
+        <!-- WhatsApp mock -->
+        <div class="justify-self-center w-full max-w-sm">
+          <div class="card p-1.5 shadow-2xl">
+            <div class="rounded-[0.8rem] overflow-hidden bg-[#0e1621]">
+              <div class="flex items-center gap-3 px-4 py-3 bg-[#1f2c34]">
+                <div class="w-9 h-9 rounded-full bg-brand/20 grid place-items-center">🍻</div>
+                <div class="leading-tight"><div class="text-sm font-semibold">EntreMesas · Bar do Márcio</div><div class="text-[11px] text-emerald-400">online</div></div>
+              </div>
+              <div class="p-4 space-y-3 text-[13px]" style="background-image:linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2));">
+                <div class="bg-[#202c33] rounded-lg p-3 max-w-[90%]">
+                  🧾 <b>Novo lançamento — Mesa 07</b><br><br>
+                  • 2x Cerveja Heineken — R$ 24,00<br>
+                  • 1x Batata Frita — R$ 35,00<br><br>
+                  💰 <b>Total acumulado da mesa: R$ 159,00</b><br>
+                  🕒 21:43
+                  <div class="text-right text-[10px] text-gray-400 mt-1">21:43 ✓✓</div>
+                </div>
+                <div class="bg-[#005c4b] rounded-lg p-2.5 max-w-[70%] ml-auto">Pode ver a conta? <span class="text-[10px] text-gray-300">21:44</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEMA / SOLUÇÃO -->
+    <section class="max-w-6xl mx-auto px-5 py-16">
+      <h2 class="text-2xl sm:text-3xl font-extrabold reveal">Dois problemas, uma plataforma</h2>
+      <div class="grid md:grid-cols-2 gap-6 mt-8">
+        <div class="card p-6 reveal">
+          <div class="text-3xl">🙈</div>
+          <h3 class="mt-3 font-bold text-lg">Falta de transparência</h3>
+          <p class="text-gray-400 mt-2 text-sm">"Não sei quanto já gastei." Surpresa na conta, contestações no fechamento, divisão confusa que gera discussão.</p>
+        </div>
+        <div class="card p-6 reveal">
+          <div class="text-3xl">😶</div>
+          <h3 class="mt-3 font-bold text-lg">Ambiente cheio, conexões difíceis</h3>
+          <p class="text-gray-400 mt-2 text-sm">Muita gente no mesmo lugar, mas é difícil interagir — e dá medo expor telefone, e-mail e identidade ao paquerar.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 1 -->
+    <section id="consumo" class="border-y border-line bg-panel/40">
+      <div class="max-w-6xl mx-auto px-5 py-16">
+        <span class="chip inline-block px-3 py-1 text-xs text-emerald-300">Módulo 1</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold mt-3">Consumo em tempo real</h2>
+        <p class="text-gray-400 mt-2 max-w-2xl">Escaneou o QR da mesa? A cada item lançado pelo garçom, você recebe na hora — no app e no WhatsApp.</p>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-8">
+          <div class="card p-5 reveal"><div class="text-2xl">⚡</div><h3 class="font-semibold mt-2">Notificação instantânea</h3><p class="text-sm text-gray-400 mt-1">Produto, quantidade, valor unitário, total acumulado e horário.</p></div>
+          <div class="card p-5 reveal"><div class="text-2xl">🧾</div><h3 class="font-semibold mt-2">Conta sempre visível</h3><p class="text-sm text-gray-400 mt-1">Acompanhe e veja o histórico de pedidos em tempo real.</p></div>
+          <div class="card p-5 reveal"><div class="text-2xl">➗</div><h3 class="font-semibold mt-2">Divisão de conta</h3><p class="text-sm text-gray-400 mt-1">Igual, por item ou por valor — sem briga no fim da noite.</p></div>
+          <div class="card p-5 reveal"><div class="text-2xl">🙋</div><h3 class="font-semibold mt-2">Chamar garçom</h3><p class="text-sm text-gray-400 mt-1">Fila priorizada: serviço, fechamento ou ajuda.</p></div>
+          <div class="card p-5 reveal"><div class="text-2xl">🚩</div><h3 class="font-semibold mt-2">Contestar lançamento</h3><p class="text-sm text-gray-400 mt-1">Item errado entra em revisão, com decisão da equipe.</p></div>
+          <div class="card p-5 reveal"><div class="text-2xl">💳</div><h3 class="font-semibold mt-2">Solicitar fechamento</h3><p class="text-sm text-gray-400 mt-1">Peça a conta e pague no caixa ou no app.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 2 -->
+    <section id="social" class="max-w-6xl mx-auto px-5 py-16">
+      <span class="chip inline-block px-3 py-1 text-xs text-rose-300">Módulo 2</span>
+      <h2 class="text-2xl sm:text-3xl font-extrabold mt-3">Social Bar — a rede social do salão</h2>
+      <p class="text-gray-400 mt-2 max-w-2xl">Uma rede social <strong class="text-gray-200">temporária</strong>, válida só enquanto você está no bar. Para paquera, amizade e networking — sem expor nada pessoal.</p>
+
+      <div class="grid lg:grid-cols-2 gap-8 mt-8 items-start">
+        <div>
+          <h3 class="font-bold text-lg">Escolha seu status</h3>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <span class="chip px-3 py-1.5 text-sm">💚 Relacionamento sério</span>
+            <span class="chip px-3 py-1.5 text-sm">❤️ Paquera</span>
+            <span class="chip px-3 py-1.5 text-sm">🔥 Algo casual</span>
+            <span class="chip px-3 py-1.5 text-sm">🤝 Amizades</span>
+            <span class="chip px-3 py-1.5 text-sm">🎉 Curtindo a noite</span>
+            <span class="chip px-3 py-1.5 text-sm">🚫 Indisponível</span>
+          </div>
+          <ul class="mt-6 space-y-3 text-sm text-gray-300">
+            <li class="flex gap-3"><span>👤</span> Perfil simplificado: nick, foto opcional, faixa etária, bio e interesses.</li>
+            <li class="flex gap-3"><span>💬</span> Convite → aceite → chat interno. Nenhum contato pessoal é revelado.</li>
+            <li class="flex gap-3"><span>🛡️</span> Bloqueio instantâneo, denúncia em um toque e moderação por IA.</li>
+            <li class="flex gap-3"><span>⏳</span> O perfil e as conversas expiram quando você sai do bar.</li>
+          </ul>
+        </div>
+
+        <!-- Mapa mock -->
+        <div class="card p-5">
+          <div class="flex items-center justify-between"><h3 class="font-semibold">🗺️ Mapa do Bar</h3><span class="text-xs text-gray-500">28 pessoas no Social</span></div>
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div class="rounded-xl border border-line p-3 bg-panel2">
+              <div class="text-xs text-gray-500">Mesa 07</div>
+              <div class="mt-1 text-sm">Ana <span class="text-rose-400">❤️</span></div>
+              <div class="text-sm">João <span class="text-emerald-400">🤝</span></div>
+            </div>
+            <div class="rounded-xl border border-line p-3 bg-panel2">
+              <div class="text-xs text-gray-500">Mesa 12</div>
+              <div class="mt-1 text-sm">Carlos <span class="text-emerald-400">💚</span></div>
+              <div class="text-sm">Mariana <span class="text-rose-400">❤️</span></div>
+            </div>
+            <div class="rounded-xl border border-line p-3 bg-panel2">
+              <div class="text-xs text-gray-500">Mesa 03</div>
+              <div class="mt-1 text-sm">🎉 😎 😎</div>
+            </div>
+            <div class="rounded-xl border border-line p-3 bg-panel2">
+              <div class="text-xs text-gray-500">Balcão</div>
+              <div class="mt-1 text-sm">🔥 🔥 🤝</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRIVACIDADE -->
+    <section id="privacidade" class="border-y border-line bg-panel/40">
+      <div class="max-w-6xl mx-auto px-5 py-16">
+        <h2 class="text-2xl sm:text-3xl font-extrabold">Privacidade não é opcional — é o produto</h2>
+        <div class="grid md:grid-cols-2 gap-8 mt-8">
+          <div class="card p-6">
+            <h3 class="font-bold text-rose-300">Nunca exposto</h3>
+            <div class="flex flex-wrap gap-2 mt-3 text-sm">
+              <span class="chip px-3 py-1.5">❌ Telefone</span>
+              <span class="chip px-3 py-1.5">❌ E-mail</span>
+              <span class="chip px-3 py-1.5">❌ Nome completo</span>
+              <span class="chip px-3 py-1.5">❌ Redes sociais</span>
+              <span class="chip px-3 py-1.5">❌ Localização exata</span>
+            </div>
+          </div>
+          <div class="card p-6">
+            <h3 class="font-bold text-emerald-300">Garantias</h3>
+            <ul class="mt-3 space-y-2 text-sm text-gray-300">
+              <li>✅ Anonimato por padrão · interação só dentro da plataforma</li>
+              <li>✅ Efemeridade · dados sociais somem ao sair (LGPD by design)</li>
+              <li>✅ Presença real verificada · QR dinâmico + geofence</li>
+              <li>✅ Consentimento granular para WhatsApp e Social Bar</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARQUITETURA -->
+    <section id="arquitetura" class="max-w-6xl mx-auto px-5 py-16">
+      <h2 class="text-2xl sm:text-3xl font-extrabold">Arquitetura & Stack</h2>
+      <p class="text-gray-400 mt-2 max-w-2xl">Pensado para tempo real, escala em noites de pico e privacidade desde o banco de dados.</p>
+      <div class="flex flex-wrap gap-2 mt-6">
+        <span class="chip px-3 py-1.5 text-sm">Flutter</span>
+        <span class="chip px-3 py-1.5 text-sm">NestJS</span>
+        <span class="chip px-3 py-1.5 text-sm">PostgreSQL + PostGIS</span>
+        <span class="chip px-3 py-1.5 text-sm">Redis</span>
+        <span class="chip px-3 py-1.5 text-sm">Socket.IO</span>
+        <span class="chip px-3 py-1.5 text-sm">WhatsApp Cloud API</span>
+        <span class="chip px-3 py-1.5 text-sm">Next.js (admin)</span>
+        <span class="chip px-3 py-1.5 text-sm">AWS</span>
+        <span class="chip px-3 py-1.5 text-sm">Moderação por IA</span>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-5 mt-8">
+        <div class="card p-5"><div class="text-2xl">📱</div><h3 class="font-semibold mt-2">Apps</h3><p class="text-sm text-gray-400 mt-1">Cliente e garçom em Flutter; painel admin em Next.js.</p></div>
+        <div class="card p-5"><div class="text-2xl">🔌</div><h3 class="font-semibold mt-2">Tempo real</h3><p class="text-sm text-gray-400 mt-1">WebSocket + Redis pub/sub; filas para WhatsApp e moderação.</p></div>
+        <div class="card p-5"><div class="text-2xl">🛡️</div><h3 class="font-semibold mt-2">Confiável</h3><p class="text-sm text-gray-400 mt-1">Multi-tenant, RBAC, criptografia, observabilidade.</p></div>
+      </div>
+    </section>
+
+    <!-- PLANOS -->
+    <section id="planos" class="border-y border-line bg-panel/40">
+      <div class="max-w-6xl mx-auto px-5 py-16">
+        <h2 class="text-2xl sm:text-3xl font-extrabold">Planos para o estabelecimento</h2>
+        <p class="text-gray-400 mt-2">O cliente final não paga o básico. Valores ilustrativos para planejamento.</p>
+        <div class="grid md:grid-cols-3 gap-6 mt-8">
+          <div class="card p-6">
+            <h3 class="font-bold text-lg">Start</h3><p class="text-sm text-gray-500">Boteco / pequeno</p>
+            <div class="text-3xl font-extrabold mt-3">R$ 149<span class="text-base font-medium text-gray-500">/mês</span></div>
+            <ul class="mt-4 space-y-2 text-sm text-gray-300">
+              <li>✅ Consumo em tempo real</li><li>✅ Até 15 mesas</li><li>✅ Divisão de conta</li><li>✅ 1.000 conversas WhatsApp</li><li class="text-gray-500">— Social Bar</li>
+            </ul>
+          </div>
+          <div class="card p-6 ring-2 ring-brand relative">
+            <span class="absolute -top-3 left-6 chip px-3 py-1 text-xs text-emerald-300 bg-ink">Mais popular</span>
+            <h3 class="font-bold text-lg">Pro</h3><p class="text-sm text-gray-500">Bar médio</p>
+            <div class="text-3xl font-extrabold mt-3">R$ 349<span class="text-base font-medium text-gray-500">/mês</span></div>
+            <ul class="mt-4 space-y-2 text-sm text-gray-300">
+              <li>✅ Tudo do Start</li><li>✅ Até 40 mesas</li><li>✅ <b>Social Bar</b></li><li>✅ 5.000 conversas WhatsApp</li><li>✅ Relatórios completos + 1 PDV</li>
+            </ul>
+          </div>
+          <div class="card p-6">
+            <h3 class="font-bold text-lg">Night</h3><p class="text-sm text-gray-500">Casa noturna / rede</p>
+            <div class="text-3xl font-extrabold mt-3">R$ 699<span class="text-base font-medium text-gray-500">+/mês</span></div>
+            <ul class="mt-4 space-y-2 text-sm text-gray-300">
+              <li>✅ Tudo do Pro</li><li>✅ Mesas ilimitadas</li><li>✅ 15.000+ conversas</li><li>✅ Multiunidade</li><li>✅ Gerente de conta</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOCUMENTAÇÃO -->
+    <section id="docs" class="max-w-6xl mx-auto px-5 py-16">
+      <h2 class="text-2xl sm:text-3xl font-extrabold">Documentação completa</h2>
+      <p class="text-gray-400 mt-2">Arquitetura, banco de dados, fluxos, wireframes, segurança, monetização, MVP e roadmap — renderizados no site.</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-8 text-sm">
+        <a href="docs.html#01-visao-geral" class="card p-4 hover:border-brand">01 · Visão Geral</a>
+        <a href="docs.html#02-arquitetura" class="card p-4 hover:border-brand">02 · Arquitetura</a>
+        <a href="docs.html#03-fluxos-usuario" class="card p-4 hover:border-brand">03 · Fluxos de Usuário</a>
+        <a href="docs.html#04-banco-de-dados" class="card p-4 hover:border-brand">04 · Banco de Dados</a>
+        <a href="docs.html#05-modulo-consumo" class="card p-4 hover:border-brand">05 · Módulo Consumo</a>
+        <a href="docs.html#06-modulo-social" class="card p-4 hover:border-brand">06 · Módulo Social</a>
+        <a href="docs.html#07-painel-admin" class="card p-4 hover:border-brand">07 · Painel Admin</a>
+        <a href="docs.html#08-wireframes" class="card p-4 hover:border-brand">08 · Wireframes</a>
+        <a href="docs.html#09-seguranca-privacidade" class="card p-4 hover:border-brand">09 · Segurança e Privacidade</a>
+        <a href="docs.html#10-integracao-whatsapp" class="card p-4 hover:border-brand">10 · Integração WhatsApp</a>
+        <a href="docs.html#11-monetizacao" class="card p-4 hover:border-brand">11 · Monetização</a>
+        <a href="docs.html#12-mvp" class="card p-4 hover:border-brand">12 · MVP</a>
+        <a href="docs.html#13-roadmap" class="card p-4 hover:border-brand">13 · Roadmap</a>
+        <a href="docs.html#14-api-spec" class="card p-4 hover:border-brand">14 · Especificação de API</a>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="max-w-6xl mx-auto px-5 pb-20">
+      <div class="card p-10 text-center glow">
+        <h2 class="text-2xl sm:text-3xl font-extrabold">Transparência no consumo. Conexões no salão.</h2>
+        <p class="text-gray-400 mt-3 max-w-xl mx-auto">EntreMesas aumenta o ticket médio e o tempo de permanência — e dá ao cliente controle e privacidade.</p>
+        <div class="mt-7 flex flex-wrap gap-3 justify-center">
+          <a href="docs.html" class="px-6 py-3 rounded-xl bg-brand text-ink font-semibold hover:opacity-90">Explorar a documentação</a>
+          <a href="#top" class="px-6 py-3 rounded-xl border border-line hover:bg-panel font-semibold">Voltar ao topo</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-line">
+    <div class="max-w-6xl mx-auto px-5 py-10 text-sm text-gray-500 flex flex-col sm:flex-row gap-3 justify-between items-center">
+      <div>🍻 <b class="text-gray-300">EntreMesas</b> — especificação de produto e arquitetura.</div>
+      <div class="flex gap-5">
+        <a href="docs.html" class="hover:text-gray-300">Documentação</a>
+        <a href="README.md" class="hover:text-gray-300">README</a>
+      </div>
+    </div>
+    <div class="text-center text-xs text-gray-600 pb-8 px-5">Valores, métricas e prazos são estimativas para planejamento e devem ser validados em piloto.</div>
+  </footer>
+
+  <script>
+    // reveal on scroll
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>
