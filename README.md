@@ -156,28 +156,71 @@ Veja **[09 — Segurança e Privacidade](./docs/09-seguranca-privacidade.md)**.
 
 ---
 
-## 🌐 Site & Deploy na Vercel
+## 🚀 O Aplicativo (MVP funcional)
 
-O repositório inclui um **site estático** (sem build, zero-config) pronto para a Vercel:
+Além da especificação, o repositório contém um **app web funcional** (React + Vite +
+TypeScript + Tailwind) com backend no **Supabase** (dados + tempo real + auth), pronto para
+deploy na **Vercel**. Cobre o **Módulo 1 — Consumo em tempo real**:
 
-| Arquivo | Descrição |
-|---|---|
-| `index.html` | Landing page do produto (hero, módulos, privacidade, planos, etc.) |
-| `docs.html` | Visualizador que renderiza os 14 documentos + diagramas Mermaid no navegador |
+| Quem | Acesso | O que faz |
+|---|---|---|
+| **Cliente** | `/t/:tableId` (link/QR, sem login) | Vê a conta **ao vivo**, chama o garçom, pede a conta |
+| **Equipe** | `/login` → `/app` | Cadastra mesas e cardápio, lança itens, atende chamadas, fecha a conta |
+| **Painel** | `/app` | Faturamento, mesas ocupadas e chamadas em tempo real |
 
-### Como publicar
-1. Faça o merge desta branch na `main` (ou aponte a Vercel para esta branch).
-2. Na Vercel: **Add New → Project → Import** o repositório `divinoviana/EntreMesas`.
-3. **Framework Preset:** `Other` (site estático). Não há build — *Build Command* e *Output
-   Directory* ficam vazios; a Vercel serve a raiz automaticamente.
-4. **Deploy.** A `index.html` é servida em `/` e a documentação em `/docs.html`.
+> Stack-alvo da spec (Flutter + NestJS + AWS) permanece como visão; este MVP usa
+> **Supabase + Vercel** para ser aplicável em bares **agora**. Social Bar é o próximo módulo.
 
-### Rodar localmente
+### Passo 1 — Banco de dados (Supabase)
+No **SQL Editor** do seu projeto, rode em ordem:
+1. [`0001_init_entremesas.sql`](./supabase/migrations/0001_init_entremesas.sql) — tabelas, índices, triggers, RLS.
+2. [`0002_rls_policies.sql`](./supabase/migrations/0002_rls_policies.sql) — políticas RLS + Realtime do app.
+3. [`0003_gated_onboarding.sql`](./supabase/migrations/0003_gated_onboarding.sql) — cadastro de bar por **convite** + admin da plataforma.
+
+Em **Authentication → Providers → Email**, para testes rápidos, desative **"Confirm email"**.
+
+### Passo 1b — Vire o admin da plataforma e gere convites
+O cadastro de bares é **controlado**: só com um código de convite válido é possível criar um bar.
+1. Crie sua conta no app (tela de login) — isso gera seu usuário em `auth.users`.
+2. No SQL Editor, rode **uma vez** (troque o e-mail se necessário):
+   ```sql
+   insert into platform_admins (user_id)
+   select id from auth.users where email = 'divinoviana@gmail.com'
+   on conflict do nothing;
+   ```
+3. Recarregue o app: aparece o menu **🎟️ Convites** (`/convites`). Gere um código e entregue
+   ao dono do bar autorizado — só ele conseguirá cadastrar o bar.
+
+### Passo 2 — Variáveis de ambiente
+Crie `.env.local` (local) e configure na Vercel (Project → Settings → Environment Variables):
 ```bash
-# qualquer servidor estático (o fetch dos .md exige HTTP, não file://)
-npx serve .        # ou: python3 -m http.server 8000
-# acesse http://localhost:8000
+VITE_SUPABASE_URL=https://vkboulmjadmkegoekgom.supabase.co   # URL BASE, sem /rest/v1/
+VITE_SUPABASE_ANON_KEY=sua-anon-publishable-key
 ```
+> ⚠️ Nunca use prefixo `VITE_` em segredos (ex.: `ANTHROPIC_API_KEY`) — variáveis `VITE_`
+> vão para o bundle e ficam públicas. Segredos só em funções server-side.
+
+### Passo 3 — Rodar localmente
+```bash
+npm install
+npm run dev      # http://localhost:5173
+```
+
+### Passo 4 — Deploy na Vercel
+- **Import** o repositório `divinoviana/EntreMesas`. A Vercel detecta **Vite** automaticamente
+  (Build: `vite build`, Output: `dist`). O `vercel.json` já cuida do roteamento SPA.
+- Defina as duas variáveis `VITE_*` e faça o **Deploy**.
+
+### Primeiro uso
+1. Abra o app → **Equipe do bar → Entrar** → crie uma conta.
+2. No **onboarding**, informe o **código de convite** (gerado em `/convites`) + nome do bar —
+   ele já vem com **cardápio e 8 mesas** de exemplo.
+3. Em **Mesas & QR**, abra o **QR de uma mesa** (gerado localmente) — escaneie com o celular,
+   copie o link `/t/...` ou use **Imprimir QR** para o adesivo da mesa.
+4. No celular o cliente vê a conta; no painel, **lance um item** e veja aparecer **na hora**. ✨
+
+> **Controle de acesso:** criar bar exige convite (validado no banco por RLS + função
+> `SECURITY DEFINER`); a inserção direta de estabelecimentos/equipe pelo cliente é bloqueada.
 
 ---
 
