@@ -72,3 +72,39 @@ export interface Staff {
 }
 
 export type CallType = 'service' | 'checkout' | 'help'
+
+export type SocialStatus = 'serious' | 'flirt' | 'casual' | 'friends' | 'night' | 'unavailable'
+
+export interface SocialProfile {
+  id: string
+  user_id: string | null
+  establishment_id: string
+  table_id: string | null
+  nickname: string
+  photo_url: string | null
+  age_range: string
+  bio: string | null
+  interests: string[]
+  status: SocialStatus
+  visible: boolean
+  created_at: string
+  expires_at: string
+}
+
+export interface Conversation {
+  id: string
+  establishment_id: string
+  profile_a: string
+  profile_b: string
+  status: string // pending | open | declined | closed
+  created_at: string
+}
+
+export interface Message {
+  id: string
+  conversation_id: string
+  sender_profile: string
+  body: string | null
+  moderation_status: string
+  created_at: string
+}

@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '@/context/AuthContext'
 
 export default function Home() {
+  const { isPlatformAdmin } = useAuth()
   return (
     <div className="min-h-full">
       <div className="max-w-md mx-auto px-5 py-16">
@@ -31,14 +33,16 @@ export default function Home() {
           </Link>
         </div>
 
-        <a
-          className="block text-center text-xs text-gray-600 mt-10 hover:text-gray-400"
-          href="https://github.com/divinoviana/EntreMesas/tree/main/docs"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Documentação do produto ↗
-        </a>
+        {isPlatformAdmin && (
+          <a
+            className="block text-center text-xs text-gray-600 mt-10 hover:text-gray-400"
+            href="https://github.com/divinoviana/EntreMesas/tree/main/docs"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Documentação do produto ↗
+          </a>
+        )}
       </div>
     </div>
   )
