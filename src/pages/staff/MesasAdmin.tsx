@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { Button, Card, Empty, Spinner } from '@/components/ui'
+import { QR, printTableQR } from '@/components/QR'
 import type { TableRow } from '@/lib/types'
 
 export default function MesasAdmin() {
@@ -116,13 +117,9 @@ export default function MesasAdmin() {
         >
           <div className="bg-panel border border-line rounded-2xl p-6 max-w-xs w-full text-center" onClick={(e) => e.stopPropagation()}>
             <div className="font-bold">Mesa {selected.label}</div>
-            <img
-              alt="QR"
-              className="mx-auto mt-3 rounded-lg bg-white p-2"
-              width={200}
-              height={200}
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(linkFor(selected))}`}
-            />
+            <div className="mt-3 flex justify-center">
+              <QR value={linkFor(selected)} size={200} />
+            </div>
             <div className="text-xs text-gray-400 break-all mt-3">{linkFor(selected)}</div>
             <div className="flex gap-2 mt-4">
               <button
@@ -135,14 +132,12 @@ export default function MesasAdmin() {
               >
                 {copied === selected.id ? 'Copiado ✓' : 'Copiar link'}
               </button>
-              <a
-                href={`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(linkFor(selected))}`}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                onClick={() => printTableQR(linkFor(selected), selected.label)}
                 className="flex-1 text-xs px-3 py-2 rounded-lg bg-brand text-ink font-semibold grid place-items-center"
               >
-                Abrir p/ imprimir
-              </a>
+                Imprimir QR
+              </button>
             </div>
             <button onClick={() => setSelected(null)} className="mt-4 text-xs text-gray-500 hover:text-gray-300">
               Fechar

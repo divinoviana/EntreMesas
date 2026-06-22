@@ -173,10 +173,23 @@ deploy na **Vercel**. Cobre o **Módulo 1 — Consumo em tempo real**:
 
 ### Passo 1 — Banco de dados (Supabase)
 No **SQL Editor** do seu projeto, rode em ordem:
-1. [`supabase/migrations/0001_init_entremesas.sql`](./supabase/migrations/0001_init_entremesas.sql) — tabelas, índices, triggers, RLS.
-2. [`supabase/migrations/0002_rls_policies.sql`](./supabase/migrations/0002_rls_policies.sql) — políticas RLS + Realtime do app.
+1. [`0001_init_entremesas.sql`](./supabase/migrations/0001_init_entremesas.sql) — tabelas, índices, triggers, RLS.
+2. [`0002_rls_policies.sql`](./supabase/migrations/0002_rls_policies.sql) — políticas RLS + Realtime do app.
+3. [`0003_gated_onboarding.sql`](./supabase/migrations/0003_gated_onboarding.sql) — cadastro de bar por **convite** + admin da plataforma.
 
 Em **Authentication → Providers → Email**, para testes rápidos, desative **"Confirm email"**.
+
+### Passo 1b — Vire o admin da plataforma e gere convites
+O cadastro de bares é **controlado**: só com um código de convite válido é possível criar um bar.
+1. Crie sua conta no app (tela de login) — isso gera seu usuário em `auth.users`.
+2. No SQL Editor, rode **uma vez** (troque o e-mail se necessário):
+   ```sql
+   insert into platform_admins (user_id)
+   select id from auth.users where email = 'divinoviana@gmail.com'
+   on conflict do nothing;
+   ```
+3. Recarregue o app: aparece o menu **🎟️ Convites** (`/convites`). Gere um código e entregue
+   ao dono do bar autorizado — só ele conseguirá cadastrar o bar.
 
 ### Passo 2 — Variáveis de ambiente
 Crie `.env.local` (local) e configure na Vercel (Project → Settings → Environment Variables):
@@ -200,9 +213,14 @@ npm run dev      # http://localhost:5173
 
 ### Primeiro uso
 1. Abra o app → **Equipe do bar → Entrar** → crie uma conta.
-2. No **onboarding**, dê um nome ao bar — ele já vem com **cardápio e 8 mesas** de exemplo.
-3. Em **Mesas & QR**, abra o QR de uma mesa e escaneie com o celular (ou copie o link `/t/...`).
+2. No **onboarding**, informe o **código de convite** (gerado em `/convites`) + nome do bar —
+   ele já vem com **cardápio e 8 mesas** de exemplo.
+3. Em **Mesas & QR**, abra o **QR de uma mesa** (gerado localmente) — escaneie com o celular,
+   copie o link `/t/...` ou use **Imprimir QR** para o adesivo da mesa.
 4. No celular o cliente vê a conta; no painel, **lance um item** e veja aparecer **na hora**. ✨
+
+> **Controle de acesso:** criar bar exige convite (validado no banco por RLS + função
+> `SECURITY DEFINER`); a inserção direta de estabelecimentos/equipe pelo cliente é bloqueada.
 
 ---
 

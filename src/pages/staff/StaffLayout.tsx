@@ -2,7 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 
 export default function StaffLayout() {
-  const { establishment, signOut } = useAuth()
+  const { establishment, signOut, isPlatformAdmin } = useAuth()
   const nav = useNavigate()
 
   const linkCls = ({ isActive }: { isActive: boolean }) =>
@@ -38,6 +38,11 @@ export default function StaffLayout() {
           <NavLink to="/app/mesas" className={linkCls}>
             🔳 Mesas & QR
           </NavLink>
+          {isPlatformAdmin && (
+            <NavLink to="/convites" className={linkCls}>
+              🎟️ Convites
+            </NavLink>
+          )}
         </nav>
       </header>
       <main className="max-w-5xl mx-auto px-4 py-6">

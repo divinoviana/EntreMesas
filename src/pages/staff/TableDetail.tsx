@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext'
 import { addItem, closeOrder, ensureOpenOrder, getOpenOrder, resolveCall, voidItem } from '@/lib/api'
 import { brl, callLabel, timeHM } from '@/lib/format'
 import { Button, Card, Spinner } from '@/components/ui'
+import { QR } from '@/components/QR'
 import type { Category, Order, OrderItem, Product, TableRow, WaiterCall } from '@/lib/types'
 
 export default function TableDetail() {
@@ -248,13 +249,7 @@ export default function TableDetail() {
       <section className="mt-8">
         <h2 className="text-sm font-semibold text-gray-300 mb-2">Link / QR do cliente</h2>
         <Card className="p-4 flex items-center gap-4">
-          <img
-            alt="QR da mesa"
-            width={96}
-            height={96}
-            className="rounded-lg bg-white p-1"
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(customerLink)}`}
-          />
+          <QR value={customerLink} size={96} />
           <div className="min-w-0">
             <div className="text-xs text-gray-400">O cliente abre este link para ver a conta ao vivo:</div>
             <div className="text-xs text-gray-300 break-all mt-1">{customerLink}</div>

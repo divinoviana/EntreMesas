@@ -8,6 +8,7 @@ interface AuthContextValue {
   user: User | null
   staff: Staff | null
   establishment: Establishment | null
+  isPlatformAdmin: boolean
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error?: string }>
   signUp: (email: string, password: string) => Promise<{ error?: string }>
@@ -22,6 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [staff, setStaff] = useState<Staff | null>(null)
   const [establishment, setEstablishment] = useState<Establishment | null>(null)
+  const [isPlatformAdmin, setIsPlatformAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
 
   async function loadStaff(uid: string) {
@@ -43,6 +45,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setEstablishment(null)
     }
+    const { data: pa } = await supabase
+      .from('platform_admins')
+      .select('user_id')
+      .eq('user_id', uid)
+      .maybeSingle()
+    setIsPlatformAdmin(Boolean(pa))
   }
 
   useEffect(() => {
@@ -62,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       else {
         setStaff(null)
         setEstablishment(null)
+        setIsPlatformAdmin(false)
       }
     })
     return () => {
@@ -86,7 +95,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, staff, establishment, loading, signIn, signUp, signOut, refresh }}>
+    <AuthContext.Provider
+      value={{ user, staff, establishment, isPlatformAdmin, loading, signIn, signUp, signOut, refresh }}
+    >
       {children}
     </AuthContext.Provider>
   )

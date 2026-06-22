@@ -77,56 +77,16 @@ export async function resolveCall(callId: string): Promise<void> {
 }
 
 /**
- * Onboarding: cria o estabelecimento, o staff (owner) e dados de exemplo
- * (cardápio + mesas) para o bar ficar utilizável na hora.
+ * Onboarding controlado: cria o bar a partir de um CÓDIGO DE CONVITE válido.
+ * A criação acontece numa função SECURITY DEFINER no banco (atômica e segura);
+ * a inserção direta em establishments/staff é bloqueada por RLS.
  */
-export async function createBarWithDefaults(userId: string, ownerName: string, barName: string) {
-  const { data: est, error: e1 } = await supabase
-    .from('establishments')
-    .insert({ name: barName })
-    .select('*')
-    .single()
-  if (e1) throw e1
-
-  const { error: e2 } = await supabase.from('staff').insert({
-    establishment_id: est.id,
-    name: ownerName || 'Responsável',
-    role: 'owner',
-    user_id: userId,
-    is_active: true,
+export async function createBarWithInvite(code: string, barName: string, ownerName: string): Promise<string> {
+  const { data, error } = await supabase.rpc('create_bar_with_invite', {
+    p_code: code,
+    p_bar_name: barName,
+    p_owner_name: ownerName,
   })
-  if (e2) throw e2
-
-  const cats: { name: string; items: [string, number][] }[] = [
-    { name: 'Cervejas', items: [['Heineken 600ml', 1900], ['Original 600ml', 1700], ['Chopp Pilsen', 1200]] },
-    { name: 'Drinks', items: [['Caipirinha', 1900], ['Gin Tônica', 2600]] },
-    { name: 'Porções', items: [['Batata Frita', 3500], ['Calabresa Acebolada', 3900], ['Mandioca Frita', 3200]] },
-    { name: 'Não Alcoólicos', items: [['Refrigerante', 800], ['Água', 500], ['Suco Natural', 1200]] },
-  ]
-  for (let i = 0; i < cats.length; i++) {
-    const { data: cat } = await supabase
-      .from('product_categories')
-      .insert({ establishment_id: est.id, name: cats[i].name, sort_order: i })
-      .select('*')
-      .single()
-    if (cat) {
-      const rows = cats[i].items.map(([name, price]) => ({
-        establishment_id: est.id,
-        category_id: cat.id,
-        name,
-        price_cents: price,
-        is_available: true,
-      }))
-      await supabase.from('products').insert(rows)
-    }
-  }
-
-  const tableRows = Array.from({ length: 8 }, (_, i) => ({
-    establishment_id: est.id,
-    label: String(i + 1).padStart(2, '0'),
-    status: 'free',
-  }))
-  await supabase.from('tables').insert(tableRows)
-
-  return est
+  if (error) throw error
+  return data as string
 }

@@ -14,6 +14,7 @@ import Operacao from '@/pages/staff/Operacao'
 import TableDetail from '@/pages/staff/TableDetail'
 import Cardapio from '@/pages/staff/Cardapio'
 import MesasAdmin from '@/pages/staff/MesasAdmin'
+import Invites from '@/pages/admin/Invites'
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth()
@@ -26,6 +27,13 @@ function RequireStaff({ children }: { children: ReactNode }) {
   const { staff, loading } = useAuth()
   if (loading) return <Spinner />
   if (!staff) return <Navigate to="/onboarding" replace />
+  return <>{children}</>
+}
+
+function RequirePlatformAdmin({ children }: { children: ReactNode }) {
+  const { isPlatformAdmin, loading } = useAuth()
+  if (loading) return <Spinner />
+  if (!isPlatformAdmin) return <Navigate to="/app" replace />
   return <>{children}</>
 }
 
@@ -58,6 +66,16 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
       <Route path="/t/:tableId" element={<TableView />} />
+      <Route
+        path="/convites"
+        element={
+          <RequireAuth>
+            <RequirePlatformAdmin>
+              <Invites />
+            </RequirePlatformAdmin>
+          </RequireAuth>
+        }
+      />
       <Route
         path="/app"
         element={
