@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { createWaiterCall, getOpenOrder } from '@/lib/api'
 import { brl, timeHM, callLabel } from '@/lib/format'
@@ -140,6 +140,17 @@ export default function TableView() {
         <div className="text-xs text-gray-400 uppercase tracking-wide">Total acumulado</div>
         <div className="text-4xl font-extrabold mt-1">{brl(order?.total_cents ?? 0)}</div>
       </div>
+
+      <Link
+        to={`/t/${tableId}/social`}
+        className="mt-3 flex items-center justify-between bg-panel border border-line rounded-2xl p-4 hover:border-flirt transition"
+      >
+        <div>
+          <div className="font-semibold">💞 Social Bar</div>
+          <div className="text-xs text-gray-400">Veja quem está no bar e faça conexões</div>
+        </div>
+        <span className="text-gray-500">›</span>
+      </Link>
 
       <div className="mt-5">
         <h2 className="text-sm font-semibold text-gray-300 mb-2">Itens lançados</h2>

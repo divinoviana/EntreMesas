@@ -160,24 +160,34 @@ Veja **[09 — Segurança e Privacidade](./docs/09-seguranca-privacidade.md)**.
 
 Além da especificação, o repositório contém um **app web funcional** (React + Vite +
 TypeScript + Tailwind) com backend no **Supabase** (dados + tempo real + auth), pronto para
-deploy na **Vercel**. Cobre o **Módulo 1 — Consumo em tempo real**:
+deploy na **Vercel**. Cobre o **Módulo 1 (consumo)** e o **Módulo 2 (Social Bar)**:
 
 | Quem | Acesso | O que faz |
 |---|---|---|
 | **Cliente** | `/t/:tableId` (link/QR, sem login) | Vê a conta **ao vivo**, chama o garçom, pede a conta |
+| **Social Bar** | `/t/:tableId/social` (login anônimo) | Perfil efêmero, mapa do bar, status, **chat moderado** |
 | **Equipe** | `/login` → `/app` | Cadastra mesas e cardápio, lança itens, atende chamadas, fecha a conta |
 | **Painel** | `/app` | Faturamento, mesas ocupadas e chamadas em tempo real |
 
 > Stack-alvo da spec (Flutter + NestJS + AWS) permanece como visão; este MVP usa
-> **Supabase + Vercel** para ser aplicável em bares **agora**. Social Bar é o próximo módulo.
+> **Supabase + Vercel** para ser aplicável em bares **agora**.
 
 ### Passo 1 — Banco de dados (Supabase)
 No **SQL Editor** do seu projeto, rode em ordem:
 1. [`0001_init_entremesas.sql`](./supabase/migrations/0001_init_entremesas.sql) — tabelas, índices, triggers, RLS.
-2. [`0002_rls_policies.sql`](./supabase/migrations/0002_rls_policies.sql) — políticas RLS + Realtime do app.
+2. [`0002_rls_policies.sql`](./supabase/migrations/0002_rls_policies.sql) — políticas RLS + Realtime (consumo).
 3. [`0003_gated_onboarding.sql`](./supabase/migrations/0003_gated_onboarding.sql) — cadastro de bar por **convite** + admin da plataforma.
+4. [`0004_social.sql`](./supabase/migrations/0004_social.sql) — **Social Bar**: perfis efêmeros, RLS e Realtime.
 
 Em **Authentication → Providers → Email**, para testes rápidos, desative **"Confirm email"**.
+Em **Authentication → Providers**, **habilite "Anonymous sign-ins"** (necessário para o Social Bar).
+
+### Passo 1c — Moderação por IA do chat (opcional)
+O chat do Social Bar tem moderação em duas camadas: **heurística no cliente** (bloqueia troca de
+contato e termos graves, sempre ativa) e **IA no servidor** (`api/moderate.ts`, função serverless
+na Vercel que usa a `ANTHROPIC_API_KEY`). Se a chave não estiver configurada ou a função indisponível
+(ex.: `vite` local), o app usa apenas a heurística — o chat continua funcionando.
+> 🔐 A `ANTHROPIC_API_KEY` fica **só no servidor** (sem prefixo `VITE_`). Nunca a exponha no cliente.
 
 ### Passo 1b — Vire o admin da plataforma e gere convites
 O cadastro de bares é **controlado**: só com um código de convite válido é possível criar um bar.
