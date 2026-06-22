@@ -156,6 +156,31 @@ Veja **[09 — Segurança e Privacidade](./docs/09-seguranca-privacidade.md)**.
 
 ---
 
+## 🌐 Site & Deploy na Vercel
+
+O repositório inclui um **site estático** (sem build, zero-config) pronto para a Vercel:
+
+| Arquivo | Descrição |
+|---|---|
+| `index.html` | Landing page do produto (hero, módulos, privacidade, planos, etc.) |
+| `docs.html` | Visualizador que renderiza os 14 documentos + diagramas Mermaid no navegador |
+
+### Como publicar
+1. Faça o merge desta branch na `main` (ou aponte a Vercel para esta branch).
+2. Na Vercel: **Add New → Project → Import** o repositório `divinoviana/EntreMesas`.
+3. **Framework Preset:** `Other` (site estático). Não há build — *Build Command* e *Output
+   Directory* ficam vazios; a Vercel serve a raiz automaticamente.
+4. **Deploy.** A `index.html` é servida em `/` e a documentação em `/docs.html`.
+
+### Rodar localmente
+```bash
+# qualquer servidor estático (o fetch dos .md exige HTTP, não file://)
+npx serve .        # ou: python3 -m http.server 8000
+# acesse http://localhost:8000
+```
+
+---
+
 _Documento de especificação preparado como entregável de arquitetura de produto. Todos os
 valores monetários, métricas e prazos são estimativas para planejamento e devem ser
 validados com dados de mercado e com o piloto._
