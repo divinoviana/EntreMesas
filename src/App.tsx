@@ -9,6 +9,7 @@ import Login from '@/pages/Login'
 import Onboarding from '@/pages/Onboarding'
 import TableView from '@/pages/customer/TableView'
 import SocialHome from '@/pages/customer/SocialHome'
+import SplitBill from '@/pages/customer/SplitBill'
 import StaffLayout from '@/pages/staff/StaffLayout'
 import Dashboard from '@/pages/staff/Dashboard'
 import Operacao from '@/pages/staff/Operacao'
@@ -68,6 +69,7 @@ export default function App() {
       <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
       <Route path="/t/:tableId" element={<TableView />} />
       <Route path="/t/:tableId/social" element={<SocialHome />} />
+      <Route path="/t/:tableId/dividir" element={<SplitBill />} />
       <Route
         path="/convites"
         element={

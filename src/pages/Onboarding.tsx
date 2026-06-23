@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
+import { supabase } from '@/lib/supabase'
 import { createBarWithInvite } from '@/lib/api'
 import { Button } from '@/components/ui'
 
@@ -22,6 +23,23 @@ export default function Onboarding() {
     try {
       await createBarWithInvite(code.trim(), barName.trim(), ownerName.trim())
       await refresh()
+      // Confirma que o app consegue LER o registro de staff (políticas RLS aplicadas).
+      const { data: s } = await supabase
+        .from('staff')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle()
+      if (!s) {
+        setErr(
+          'Seu bar foi criado, mas o app não conseguiu carregar suas permissões. ' +
+            'Provavelmente a migração 0002 (políticas RLS) não foi aplicada no Supabase. ' +
+            'Aplique a 0002 e recarregue esta página.',
+        )
+        setBusy(false)
+        return
+      }
       nav('/app')
     } catch (e: any) {
       setErr(e?.message || 'Não foi possível criar o bar. Verifique o código de convite.')

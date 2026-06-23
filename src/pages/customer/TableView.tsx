@@ -193,13 +193,21 @@ export default function TableView() {
 
       {/* Ações fixas */}
       <div className="fixed bottom-0 left-0 right-0 border-t border-line bg-ink/95 backdrop-blur">
-        <div className="max-w-md mx-auto px-4 py-3 grid grid-cols-2 gap-3">
-          <Button variant="ghost" disabled={sending} onClick={() => call('service')}>
-            🙋 Chamar garçom
-          </Button>
-          <Button disabled={sending} onClick={() => call('checkout')}>
-            💳 Pedir a conta
-          </Button>
+        <div className="max-w-md mx-auto px-4 py-3 space-y-2">
+          <Link
+            to={`/t/${tableId}/dividir`}
+            className="block text-center text-sm py-2 rounded-lg border border-line hover:bg-panel2"
+          >
+            ➗ Dividir a conta
+          </Link>
+          <div className="grid grid-cols-2 gap-3">
+            <Button variant="ghost" disabled={sending} onClick={() => call('service')}>
+              🙋 Chamar garçom
+            </Button>
+            <Button disabled={sending} onClick={() => call('checkout')}>
+              💳 Pedir a conta
+            </Button>
+          </div>
         </div>
       </div>
     </div>
