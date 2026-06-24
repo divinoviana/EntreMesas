@@ -178,6 +178,7 @@ No **SQL Editor** do seu projeto, rode em ordem:
 2. [`0002_rls_policies.sql`](./supabase/migrations/0002_rls_policies.sql) — políticas RLS + Realtime (consumo).
 3. [`0003_gated_onboarding.sql`](./supabase/migrations/0003_gated_onboarding.sql) — cadastro de bar por **convite** + admin da plataforma.
 4. [`0004_social.sql`](./supabase/migrations/0004_social.sql) — **Social Bar**: perfis efêmeros, RLS e Realtime.
+5. [`0005_disputes.sql`](./supabase/migrations/0005_disputes.sql) — **contestação de item**: RLS e Realtime.
 
 Em **Authentication → Providers → Email**, para testes rápidos, desative **"Confirm email"**.
 Em **Authentication → Providers**, **habilite "Anonymous sign-ins"** (necessário para o Social Bar).
@@ -206,9 +207,16 @@ Crie `.env.local` (local) e configure na Vercel (Project → Settings → Enviro
 ```bash
 VITE_SUPABASE_URL=https://vkboulmjadmkegoekgom.supabase.co   # URL BASE, sem /rest/v1/
 VITE_SUPABASE_ANON_KEY=sua-anon-publishable-key
+VITE_PUBLIC_BASE_URL=https://SEU-APP.vercel.app             # domínio de produção p/ os QRs
 ```
 > ⚠️ Nunca use prefixo `VITE_` em segredos (ex.: `ANTHROPIC_API_KEY`) — variáveis `VITE_`
 > vão para o bundle e ficam públicas. Segredos só em funções server-side.
+
+> 🚧 **Acesso público (importante!):** em **Vercel → Settings → Deployment Protection**,
+> **desative "Vercel Authentication"** para Produção. Se estiver ligada, o cliente que ler o
+> QR cai numa tela de login/aprovação do Vercel ("Request Sent"). Defina também
+> `VITE_PUBLIC_BASE_URL` com o **domínio de produção** para o QR nunca apontar para uma URL
+> de preview (que é sempre protegida).
 
 ### Passo 3 — Rodar localmente
 ```bash

@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { Button, Card, Empty, Spinner } from '@/components/ui'
 import { QR, printTableQR } from '@/components/QR'
+import { tableLink } from '@/lib/url'
 import type { TableRow } from '@/lib/types'
 
 export default function MesasAdmin() {
@@ -52,7 +53,7 @@ export default function MesasAdmin() {
     }
   }
 
-  const linkFor = (t: TableRow) => `${window.location.origin}/t/${t.id}`
+  const linkFor = (t: TableRow) => tableLink(t.id)
 
   if (loading) return <Spinner />
 

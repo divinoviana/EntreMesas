@@ -2,11 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
-import { addItem, closeOrder, ensureOpenOrder, getOpenOrder, resolveCall, voidItem } from '@/lib/api'
-import { brl, callLabel, timeHM } from '@/lib/format'
+import { addItem, closeOrder, ensureOpenOrder, getDisputes, getOpenOrder, resolveCall, resolveDispute, voidItem } from '@/lib/api'
+import { brl, callLabel, disputeReasonLabel, timeHM } from '@/lib/format'
 import { Button, Card, Spinner } from '@/components/ui'
 import { QR } from '@/components/QR'
-import type { Category, Order, OrderItem, Product, TableRow, WaiterCall } from '@/lib/types'
+import { tableLink } from '@/lib/url'
+import type { Category, Dispute, Order, OrderItem, Product, TableRow, WaiterCall } from '@/lib/types'
 
 export default function TableDetail() {
   const { tableId } = useParams()
@@ -18,6 +19,7 @@ export default function TableDetail() {
   const [cats, setCats] = useState<Category[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [calls, setCalls] = useState<WaiterCall[]>([])
+  const [disputes, setDisputes] = useState<Dispute[]>([])
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -32,9 +34,13 @@ export default function TableDetail() {
         .eq('order_id', o.id)
         .eq('status', 'active')
         .order('created_at')
-      setItems((data as OrderItem[]) ?? [])
+      const its = (data as OrderItem[]) ?? []
+      setItems(its)
+      const ds = await getDisputes(its.map((i) => i.id))
+      setDisputes(ds.filter((d) => d.status === 'open'))
     } else {
       setItems([])
+      setDisputes([])
     }
   }, [tableId])
 
@@ -87,6 +93,7 @@ export default function TableDetail() {
       ch.on('postgres_changes', { event: '*', schema: 'public', table: 'order_items', filter: `order_id=eq.${order.id}` }, () => reloadOrder())
     }
     ch.on('postgres_changes', { event: '*', schema: 'public', table: 'waiter_calls', filter: `table_id=eq.${tableId}` }, () => reloadCalls())
+    ch.on('postgres_changes', { event: '*', schema: 'public', table: 'disputes' }, () => reloadOrder())
     ch.subscribe()
     return () => {
       supabase.removeChannel(ch)
@@ -99,7 +106,7 @@ export default function TableDetail() {
       .filter((g) => g.items.length > 0)
   }, [cats, products])
 
-  const customerLink = `${window.location.origin}/t/${tableId}`
+  const customerLink = tableId ? tableLink(tableId) : ''
 
   async function handleOpen() {
     if (!tableId || !establishment) return
@@ -139,6 +146,18 @@ export default function TableDetail() {
     }
   }
 
+  async function handleResolveDispute(d: Dispute, accept: boolean) {
+    setBusy(true)
+    try {
+      await resolveDispute(d, accept)
+      await reloadOrder()
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const disputedIds = new Set(disputes.map((d) => d.order_item_id))
+
   if (loading) return <Spinner />
   if (!table) return <div className="text-gray-400">Mesa não encontrada. <Link className="text-brand" to="/app/operacao">Voltar</Link></div>
 
@@ -171,6 +190,43 @@ export default function TableDetail() {
         </div>
       )}
 
+      {/* Contestações */}
+      {disputes.length > 0 && (
+        <div className="mt-3 space-y-2">
+          {disputes.map((d) => {
+            const it = items.find((i) => i.id === d.order_item_id)
+            return (
+              <div key={d.id} className="bg-rose-500/10 border border-rose-500/30 rounded-xl px-3 py-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">🚩 Contestação{it ? ` — ${it.quantity}x ${it.product_name}` : ''}</span>
+                  <span className="text-xs text-gray-400">{timeHM(d.created_at)}</span>
+                </div>
+                <div className="text-xs text-gray-300 mt-0.5">
+                  {disputeReasonLabel(d.reason)}
+                  {d.detail ? ` · "${d.detail}"` : ''}
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => handleResolveDispute(d, true)}
+                    disabled={busy}
+                    className="text-xs px-3 py-1.5 rounded-lg bg-rose-500 text-white font-semibold disabled:opacity-50"
+                  >
+                    Aceitar (remover item)
+                  </button>
+                  <button
+                    onClick={() => handleResolveDispute(d, false)}
+                    disabled={busy}
+                    className="text-xs px-3 py-1.5 rounded-lg border border-line disabled:opacity-50"
+                  >
+                    Manter item
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
       {/* Conta */}
       <Card className="mt-4 p-4">
         <div className="flex items-center justify-between">
@@ -193,6 +249,7 @@ export default function TableDetail() {
               <div key={it.id} className="flex items-center justify-between py-2">
                 <div className="text-sm">
                   {it.quantity}x {it.product_name}
+                  {disputedIds.has(it.id) && <span className="text-amber-300"> 🚩</span>}
                   <span className="text-gray-500"> · {brl(it.unit_price_cents)} · {timeHM(it.created_at)}</span>
                 </div>
                 <div className="flex items-center gap-3">

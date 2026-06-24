@@ -62,6 +62,16 @@ export interface WaiterCall {
   handled_at?: string | null
 }
 
+export interface Dispute {
+  id: string
+  order_item_id: string
+  reason: string // not_ordered | wrong_qty | wrong_price | other
+  detail: string | null
+  status: string // open | accepted | rejected
+  created_at: string
+  resolved_at?: string | null
+}
+
 export interface Staff {
   id: string
   establishment_id: string

@@ -15,3 +15,13 @@ export const callEmoji: Record<string, string> = {
   checkout: '💳',
   help: 'ℹ️',
 }
+
+export const disputeReasons: { value: string; label: string }[] = [
+  { value: 'not_ordered', label: 'Não pedi este item' },
+  { value: 'wrong_qty', label: 'Quantidade errada' },
+  { value: 'wrong_price', label: 'Preço diferente' },
+  { value: 'other', label: 'Outro' },
+]
+
+export const disputeReasonLabel = (v: string): string =>
+  disputeReasons.find((r) => r.value === v)?.label ?? v

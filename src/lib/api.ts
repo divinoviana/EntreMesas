@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Order, Product, CallType } from './types'
+import type { CallType, Dispute, Order, Product } from './types'
 
 /** Conta aberta (ou em fechamento) de uma mesa, se houver. */
 export async function getOpenOrder(tableId: string): Promise<Order | null> {
@@ -74,6 +74,37 @@ export async function resolveCall(callId: string): Promise<void> {
     .update({ status: 'done', handled_at: new Date().toISOString() })
     .eq('id', callId)
   if (error) throw error
+}
+
+/** Contestações de uma lista de itens (cliente e equipe). */
+export async function getDisputes(orderItemIds: string[]): Promise<Dispute[]> {
+  if (orderItemIds.length === 0) return []
+  const { data } = await supabase
+    .from('disputes')
+    .select('*')
+    .in('order_item_id', orderItemIds)
+    .order('created_at', { ascending: false })
+  return (data as Dispute[]) ?? []
+}
+
+/** Cliente abre uma contestação para um item. */
+export async function createDispute(orderItemId: string, reason: string, detail: string): Promise<void> {
+  const { error } = await supabase
+    .from('disputes')
+    .insert({ order_item_id: orderItemId, reason, detail: detail.trim() || null, status: 'open' })
+  if (error) throw error
+}
+
+/** Equipe resolve a contestação. Ao aceitar, o item é anulado (sai do total). */
+export async function resolveDispute(dispute: Dispute, accept: boolean): Promise<void> {
+  const { error } = await supabase
+    .from('disputes')
+    .update({ status: accept ? 'accepted' : 'rejected', resolved_at: new Date().toISOString() })
+    .eq('id', dispute.id)
+  if (error) throw error
+  if (accept) {
+    await supabase.from('order_items').update({ status: 'voided' }).eq('id', dispute.order_item_id)
+  }
 }
 
 /**
